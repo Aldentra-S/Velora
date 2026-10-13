@@ -1,0 +1,18 @@
+{
+  "name": "velora-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:frontend": "npm run dev --workspace=@velora/frontend",
+    "dev:backend": "npm run dev --workspace=@velora/backend",
+    "build": "npm run build --workspaces",
+    "build:frontend": "npm run build --workspace=@velora/frontend",
+    "build:backend": "npm run build --workspace=@velora/backend",
+    "typecheck": "npm run typecheck --workspaces",
+    "typecheck:frontend": "npm run typecheck --workspace=@velora/frontend",
+    "typecheck:backend": "npm run typecheck --workspace=@velora/backend"
+  }
+}
