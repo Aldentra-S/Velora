@@ -157,10 +157,6 @@ export default function AuthPage({ onLogin }: AuthPageProps) {
             )}
           </button>
         </form>
-
-        <div style={{ textAlign: 'center', fontSize: 11, color: 'var(--text-muted)', marginTop: 24, letterSpacing: '0.01em' }}>
-          Velora Engine &bull; Penyimpanan PostgreSQL Lokal &bull; Biaya Rp0
-        </div>
       </div>
     </div>
   )

@@ -190,6 +190,14 @@ export async function changePassword(req: Request, res: Response): Promise<void>
       return
     }
 
+    if (!user.passwordHash) {
+      res.status(400).json({
+        error: 'Bad Request',
+        message: 'Akun Anda belum memiliki kata sandi (terdaftar melalui OAuth).'
+      })
+      return
+    }
+
     // Verify current password
     const isCurrentValid = await comparePassword(currentPassword, user.passwordHash)
     if (!isCurrentValid) {

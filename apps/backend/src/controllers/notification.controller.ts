@@ -109,17 +109,27 @@ async function syncSystemAlerts(userId: string): Promise<void> {
 
       for (const rec of dueRecurring) {
         const itemDesc = rec.description || 'Transaksi Rutin'
-        const existing = await prisma.notification.findFirst({
+        const existingNotifications = await prisma.notification.findMany({
           where: {
             userId,
             type: 'RECURRING_DUE',
             message: { contains: itemDesc },
-            createdAt: { gte: oneDayAgo },
-            isRead: false
-          }
+            createdAt: { gte: oneDayAgo }
+          },
+          orderBy: { createdAt: 'desc' }
         })
 
-        if (!existing) {
+        // Clean up duplicate spam notifications created from previous bug
+        if (existingNotifications.length > 1) {
+          const [, ...duplicates] = existingNotifications
+          const duplicateIds = duplicates.map((d) => d.id)
+          await prisma.notification.deleteMany({
+            where: { id: { in: duplicateIds } }
+          })
+        }
+
+        // Only create new notification if none was generated in the last 24 hours
+        if (existingNotifications.length === 0) {
           const nominal = Number(rec.amount).toLocaleString('id-ID')
           await prisma.notification.create({
             data: {

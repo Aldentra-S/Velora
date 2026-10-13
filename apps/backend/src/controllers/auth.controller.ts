@@ -156,7 +156,7 @@ export async function login(req: Request, res: Response): Promise<void> {
       where: { email }
     })
 
-    if (!user) {
+    if (!user || !user.passwordHash) {
       res.status(401).json({
         error: 'Unauthorized',
         message: 'Email atau password salah.'
