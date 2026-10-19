@@ -10,7 +10,6 @@ import {
   IconLock,
   IconEye,
   IconEyeOff,
-  IconArrowRight,
   IconUser,
   IconAlertCircle,
   IconInfo,
