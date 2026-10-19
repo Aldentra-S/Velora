@@ -1,21 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
   <rect width="32" height="32" rx="8" fill="#080c16" />
   <rect x="0.5" y="0.5" width="31" height="31" rx="7.5" stroke="#1e293b" />
-  <g transform="translate(4, 4)">
-    <path
-      d="M12 2L3 7V17L12 22L21 17V7L12 2Z"
-      stroke="#6366f1"
-      stroke-width="1.8"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M12 6L7.5 14H16.5L12 6Z"
-      stroke="#6366f1"
-      stroke-width="1.8"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <circle cx="12" cy="17" r="1" fill="#6366f1" />
+  <g transform="translate(1, 0) scale(0.85)">
+    <defs>
+      <linearGradient id="favVLeft" x1="4" y1="6" x2="18" y2="30" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#38bdf8" />
+        <stop offset="45%" stop-color="#0ea5e9" />
+        <stop offset="100%" stop-color="#2563eb" />
+      </linearGradient>
+      <linearGradient id="favVRight" x1="18" y1="30" x2="32" y2="6" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#1d4ed8" />
+        <stop offset="55%" stop-color="#3b82f6" />
+        <stop offset="100%" stop-color="#4f46e5" />
+      </linearGradient>
+      <linearGradient id="favVFold" x1="14" y1="20" x2="19" y2="29" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#0f172a" stop-opacity="0.85" />
+        <stop offset="100%" stop-color="#172554" stop-opacity="0.4" />
+      </linearGradient>
+    </defs>
+    <path d="M32 6H22.5L15.2 23.5L18 30L32 6Z" fill="url(#favVRight)" />
+    <path d="M15.2 23.5L18 30L21.2 24.2L15.2 23.5Z" fill="url(#favVFold)" />
+    <path d="M4 6H13.8L18 30H11L4 6Z" fill="url(#favVLeft)" />
   </g>
 </svg>

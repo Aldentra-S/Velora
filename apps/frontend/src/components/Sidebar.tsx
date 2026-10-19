@@ -65,7 +65,7 @@ export default function Sidebar({
         {/* Brand */}
         <div className="sidebar-brand">
           <div className="sidebar-logo">
-            <IconLogo size={20} />
+            <IconLogo size={28} />
           </div>
           <div>
             <div className="sidebar-title">Velora</div>
@@ -119,7 +119,10 @@ export default function Sidebar({
           <button
             type="button"
             className="nav-item"
-            onClick={onLogout}
+            onClick={() => {
+              onLogout()
+              onMobileClose()
+            }}
             id="sidebar-logout-btn"
           >
             <span className="nav-item-icon">

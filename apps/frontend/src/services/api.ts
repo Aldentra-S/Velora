@@ -153,6 +153,8 @@ export const authApi = {
 
   getMe: () => request<{ user: UserProfile }>('/auth/me', { method: 'GET' }),
 
+  getGoogleAuthUrl: () => `${API_BASE_URL}/auth/google`,
+
   getHealth: () =>
     request<{ status: string; service: string; version: string; timestamp: string; uptime: number }>('/health', {
       method: 'GET',

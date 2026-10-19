@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { authApi } from './services/api'
-import type { UserProfile } from './services/types'
+import type { UserProfile, ApiError } from './services/types'
 import AuthPage from './components/AuthPage'
 import Sidebar from './components/Sidebar'
 import Dashboard from './components/Dashboard'
@@ -12,7 +12,7 @@ import RecurringPage from './components/RecurringPage'
 import ReportsPage from './components/ReportsPage'
 import ProfilePage from './components/ProfilePage'
 import NotificationDropdown from './components/NotificationDropdown'
-import { IconLogo, IconMenu } from './components/Icons'
+import { IconLogo, IconMenu, IconClose, IconAlertCircle } from './components/Icons'
 
 type Page = 'dashboard' | 'wallets' | 'categories' | 'transactions' | 'budgets' | 'recurring' | 'reports' | 'profile'
 
@@ -33,6 +33,8 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard')
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  const [logoutError, setLogoutError] = useState<string | null>(null)
 
   // Restore session on mount
   useEffect(() => {
@@ -50,19 +52,48 @@ export default function App() {
     checkSession()
   }, [])
 
+  // Keyboard Escape listener for logout confirmation dialog
+  useEffect(() => {
+    if (!showLogoutConfirm) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !loggingOut) {
+        setShowLogoutConfirm(false)
+        setLogoutError(null)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [showLogoutConfirm, loggingOut])
+
   const handleLogin = (u: UserProfile) => {
     setUser(u)
     setCurrentPage('dashboard')
   }
 
-  const handleLogout = async () => {
+  const handleOpenLogoutConfirm = () => {
+    setLogoutError(null)
+    setShowLogoutConfirm(true)
+  }
+
+  const handleCloseLogoutConfirm = () => {
+    if (!loggingOut) {
+      setShowLogoutConfirm(false)
+      setLogoutError(null)
+    }
+  }
+
+  const handleConfirmLogout = async () => {
+    if (loggingOut) return
     setLoggingOut(true)
+    setLogoutError(null)
     try {
       await authApi.logout()
-    } catch {
-      // ignore
-    } finally {
       setUser(null)
+      setShowLogoutConfirm(false)
+    } catch (err: unknown) {
+      const e = err as ApiError
+      setLogoutError(e.message || 'Gagal memproses keluar akun. Silakan coba lagi.')
+    } finally {
       setLoggingOut(false)
     }
   }
@@ -119,7 +150,7 @@ export default function App() {
         user={user}
         currentPage={currentPage}
         onNavigate={setCurrentPage}
-        onLogout={handleLogout}
+        onLogout={handleOpenLogoutConfirm}
         mobileOpen={mobileNavOpen}
         onMobileClose={() => setMobileNavOpen(false)}
       />
@@ -214,6 +245,81 @@ export default function App() {
           )}
         </main>
       </div>
+
+      {/* ── Modal Konfirmasi Logout ─────────────────────────────────────────── */}
+      {showLogoutConfirm && (
+        <div
+          className="modal-overlay"
+          onClick={handleCloseLogoutConfirm}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="logout-dialog-title"
+        >
+          <div
+            className="modal"
+            style={{ maxWidth: 420 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <div className="modal-title" id="logout-dialog-title">
+                Keluar dari akun?
+              </div>
+              <button
+                type="button"
+                className="modal-close"
+                onClick={handleCloseLogoutConfirm}
+                disabled={loggingOut}
+                aria-label="Tutup dialog"
+              >
+                <IconClose size={16} />
+              </button>
+            </div>
+
+            <div className="modal-body">
+              {logoutError && (
+                <div
+                  className="auth-alert error"
+                  style={{ marginBottom: 14 }}
+                  role="alert"
+                >
+                  <IconAlertCircle size={16} />
+                  <div style={{ flex: 1, fontSize: 13 }}>{logoutError}</div>
+                </div>
+              )}
+              <p style={{ fontSize: 13.5, color: 'var(--text)', margin: 0, lineHeight: 1.5 }}>
+                Kamu yakin ingin keluar dari akun Velora ini?
+              </p>
+            </div>
+
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={handleCloseLogoutConfirm}
+                disabled={loggingOut}
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger btn-sm"
+                onClick={handleConfirmLogout}
+                disabled={loggingOut}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              >
+                {loggingOut ? (
+                  <>
+                    <span className="spinner" style={{ width: 14, height: 14 }} aria-hidden="true" />
+                    <span>Memproses...</span>
+                  </>
+                ) : (
+                  'Ya, Keluar'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

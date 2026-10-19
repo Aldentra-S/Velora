@@ -156,10 +156,18 @@ export async function login(req: Request, res: Response): Promise<void> {
       where: { email }
     })
 
-    if (!user || !user.passwordHash) {
+    if (!user) {
       res.status(401).json({
         error: 'Unauthorized',
         message: 'Email atau password salah.'
+      })
+      return
+    }
+
+    if (!user.passwordHash) {
+      res.status(401).json({
+        error: 'Unauthorized',
+        message: 'Akun ini terdaftar menggunakan Google. Silakan masuk menggunakan Google.'
       })
       return
     }
